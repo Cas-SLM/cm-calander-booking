@@ -9,6 +9,7 @@ export class HealthService {
     this.isStarted = true;
   }
 
+  // Added comment for testing pre-commit hook
   checkReadiness(): HealthCheckDTO {
     return {
       message: 'ok',
