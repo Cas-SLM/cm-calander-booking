@@ -1,0 +1,17 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+#
+# Types: feat, fix, docs, style, refactor, test, chore, ci, build, perf
+# Scope: optional, e.g., api, auth, database
+# Subject: lowercase, no period
+#
+# Example:
+# feat(auth): add OAuth2 integration
+#
+# Add support for OAuth2 authentication flow
+# including token refresh and error handling
+#
+# Closes #123
