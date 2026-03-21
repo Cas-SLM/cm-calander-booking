@@ -9,7 +9,7 @@ export class HealthService {
     this.isStarted = true;
   }
 
-  // Added comment for testing pre-commit hook
+  // Updated comment for Husky testing
   checkReadiness(): HealthCheckDTO {
     return {
       message: 'ok',
