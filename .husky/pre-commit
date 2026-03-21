@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# Run our comprehensive pre-commit checks
+./scripts/pre-commit.sh

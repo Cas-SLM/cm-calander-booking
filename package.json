@@ -24,7 +24,8 @@
     "pre-commit": "./scripts/pre-commit.sh",
     "setup-hooks": "./scripts/setup-hooks.sh install",
     "verify-hooks": "./scripts/setup-hooks.sh verify",
-    "uninstall-hooks": "./scripts/setup-hooks.sh uninstall"
+    "uninstall-hooks": "./scripts/setup-hooks.sh uninstall",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -47,6 +48,7 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.0",
     "prettier": "^3.4.2",
     "source-map-support": "^0.5.21",

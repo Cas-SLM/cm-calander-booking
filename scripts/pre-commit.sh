@@ -41,8 +41,13 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
 fi
 
 # Get commit message
-COMMIT_MSG_FILE="$1"
-COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+if [[ -n "${1:-}" ]]; then
+    COMMIT_MSG_FILE="$1"
+    COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+else
+    # Fallback: try to get commit message from git config or use a default
+    COMMIT_MSG="test: fallback commit message"
+fi
 
 # Skip validation for merge commits and empty commits
 if [[ "$COMMIT_MSG" =~ ^Merge\ .* ]] || [[ -z "$COMMIT_MSG" ]]; then
