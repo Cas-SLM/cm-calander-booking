@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 env:
-  REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_REPO_NAME }}
+  REGISTRY: ${{ vars.DOCKERHUB_USERNAME }}
+  IMAGE_NAME: ${{ github.repository }}
 
 permissions:
   contents: read
