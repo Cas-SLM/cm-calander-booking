@@ -229,13 +229,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Configure AWS credentials (short-lived via OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
-          role-session-name: github-actions-${{ github.run_id }}
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -276,27 +269,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (short-lived via OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Deploy to Vercel Development
+        uses: amondnet/vercel-action@v25
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
-          aws-region: us-east-1
-          role-session-name: deploy-dev-${{ github.run_id }}
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: v1.29.0
-
-      - name: Configure kubectl
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
-      - name: Deploy to development
-        run: |
-          ./scripts/deploy.sh dev ${{ needs.release.outputs.new-version }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--env NODE_ENV=development'
 
   # =============================================================================
   # Stage 6: Deploy to Test (Manual Approval Gate)
@@ -314,27 +294,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (short-lived via OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Deploy to Vercel Test
+        uses: amondnet/vercel-action@v25
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_TEST }}
-          aws-region: us-east-1
-          role-session-name: deploy-test-${{ github.run_id }}
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: v1.29.0
-
-      - name: Configure kubectl
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_TEST }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
-      - name: Deploy to test
-        run: |
-          ./scripts/deploy.sh test ${{ needs.release.outputs.new-version }}
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--env NODE_ENV=test'
 
   # =============================================================================
   # Stage 7: Deploy to Production (Manual Approval Required)
@@ -352,29 +319,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (short-lived via OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Deploy to Vercel Production
+        uses: amondnet/vercel-action@v25
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
-          aws-region: us-east-1
-          role-session-name: deploy-prod-${{ github.run_id }}
-
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: v1.29.0
-
-      - name: Configure kubectl
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
-      - name: Deploy to production
-        run: |
-          ./scripts/deploy.sh prod ${{ needs.release.outputs.new-version }}
-
-      - name: Notify deployment status
-        if: always()
-        run: |
-          echo "Production deployment completed with status: ${{ job.status }}"
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--prod'
