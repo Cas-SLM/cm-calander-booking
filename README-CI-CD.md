@@ -111,57 +111,45 @@ NODE_VERSION=20                       # Node.js version
 ## Deployment Environments
 
 ### Development
-- **Namespace**: `cm-hello-ts-dev`
-- **Replicas**: 1
-- **Resources**: 128Mi memory, 100m CPU
+- **Platform**: Vercel
+- **Environment**: Development
 - **Auto-deploy**: Yes (on main branch)
+- **Environment Variables**: `NODE_ENV=development`
 
 ### Test
-- **Namespace**: `cm-hello-ts-test`
-- **Replicas**: 1
-- **Resources**: 128Mi memory, 100m CPU
+- **Platform**: Vercel
+- **Environment**: Preview
 - **Auto-deploy**: Manual approval required
+- **Environment Variables**: `NODE_ENV=test`
 
 ### Production
-- **Namespace**: `cm-hello-ts-prod`
-- **Replicas**: 3 (with HPA up to 10)
-- **Resources**: 512Mi memory, 500m CPU
+- **Platform**: Vercel
+- **Environment**: Production
 - **Auto-deploy**: Manual approval required
-- **Autoscaling**: CPU 70%, Memory 80%
+- **Environment Variables**: Production defaults
 
-## Kubernetes Resources
+## Vercel Deployment
 
-The deployment creates:
+The deployment uses Vercel for all environments with the following configuration:
 
-1. **Namespace**: Environment-specific namespace
-2. **ConfigMap**: Application configuration
-3. **Secret**: Docker registry credentials
-4. **Deployment**: Application pods
-5. **Service**: ClusterIP service
-6. **HPA**: Horizontal Pod Autoscaler (production only)
+1. **Environment Variables**: Set per environment in Vercel dashboard
+2. **Build Settings**: Uses pnpm for package management
+3. **Output Directory**: `dist` (NestJS build output)
+4. **Runtime**: Node.js 20
 
-## Monitoring and Logs
+### Vercel Dashboard
 
-### Deployment Status
-```bash
-# Check deployment status
-kubectl get deployment cm-hello-ts-dev -n cm-hello-ts-dev
+Monitor deployments and configure environments through the Vercel dashboard:
+- View deployment logs and status
+- Configure environment variables
+- Set up custom domains
+- Monitor performance and analytics
 
-# View pod logs
-kubectl logs -f deployment/cm-hello-ts-dev -n cm-hello-ts-dev
+### Environment URLs
 
-# Check rollout history
-kubectl rollout history deployment/cm-hello-ts-dev -n cm-hello-ts-dev
-```
-
-### Local Access
-```bash
-# Port forward to access service locally
-kubectl port-forward service/cm-hello-ts-service -n cm-hello-ts-dev 8080:80
-
-# Access application
-curl http://localhost:8080
-```
+- **Development**: `https://dev-<project>.vercel.app`
+- **Test**: `https://<branch>-<project>.vercel.app`
+- **Production**: `https://<project>.vercel.app`
 
 ## Security Features
 
@@ -169,7 +157,7 @@ curl http://localhost:8080
 2. **Container Scanning**: Trivy vulnerability scanning
 3. **Secrets Management**: Encrypted GitHub secrets
 4. **Image Signing**: Docker Hub image verification
-5. **RBAC**: Kubernetes role-based access control
+5. **Vercel Security**: Built-in security features and isolation
 
 ## Troubleshooting
 
@@ -186,9 +174,9 @@ curl http://localhost:8080
    - Review test environment setup
 
 3. **Deployment Failures**
-   - Check Kubernetes cluster connectivity
-   - Verify Docker image availability
-   - Review resource limits and requests
+   - Check Vercel project configuration
+   - Verify environment variables in Vercel dashboard
+   - Review build logs in Vercel
 
 4. **Security Scan Failures**
    - Review vulnerability reports in GitHub Security tab
@@ -204,8 +192,8 @@ gh api repos/foo/bar/actions/runs
 # Download workflow logs
 gh api repos/foo/bar/actions/runs/123456789/logs
 
-# Check Kubernetes events
-kubectl get events -n cm-hello-ts-dev --sort-by=.metadata.creationTimestamp
+# Check Vercel deployment status
+npx vercel --token $VERCEL_TOKEN --scope $VERCEL_ORG_ID
 ```
 
 ## Best Practices
@@ -222,7 +210,7 @@ kubectl get events -n cm-hello-ts-dev --sort-by=.metadata.creationTimestamp
 For issues with the CI/CD pipeline:
 
 1. Check the GitHub Actions workflow logs
-2. Review Kubernetes deployment status
+2. Review Vercel deployment status
 3. Verify all required secrets are configured
 4. Check Docker Hub image availability
 5. Contact the DevOps team for assistance
