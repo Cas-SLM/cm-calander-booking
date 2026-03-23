@@ -21,11 +21,14 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "pre-commit": "./scripts/pre-commit.sh",
+    "precommit": "./scripts/pre-commit.sh",
     "setup-hooks": "./scripts/setup-hooks.sh install",
     "verify-hooks": "./scripts/setup-hooks.sh verify",
     "uninstall-hooks": "./scripts/setup-hooks.sh uninstall",
     "prepare": "husky"
+  },
+  "overrides": {
+    "ajv": "^8.18.0"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

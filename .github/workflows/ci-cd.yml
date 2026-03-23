@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 env:
-  REGISTRY: docker.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_REPO_NAME }}
 
 permissions:
   contents: read
@@ -31,10 +31,10 @@ jobs:
         uses: ./.github/actions/setup-node
 
       - name: Check code formatting (Prettier)
-        run: pnpm run format --check
+        run: pnpm run format:check
 
       - name: Run ESLint
-        run: pnpm run lint
+        run: pnpm run lint:check
 
   test:
     name: Test with Coverage
@@ -256,7 +256,7 @@ jobs:
   deploy-dev:
     name: Deploy to Development
     runs-on: ubuntu-latest
-    needs: [release, docker-push]
+    needs: [docker-push]
     if: needs.release.outputs.released == 'true'
     environment: development
     steps:

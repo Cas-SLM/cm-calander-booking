@@ -11,10 +11,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
+RED='\033[1;31m'
+GREEN='\033[1;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
+BLUE='\033[1;34m'
 NC='\033[0m' # No Color
 
 # Logging functions
@@ -46,13 +46,12 @@ if [[ -n "${1:-}" ]]; then
     COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 else
     # Fallback: try to get commit message from git config or use a default
-    COMMIT_MSG="test: fallback commit message"
+    COMMIT_MSG=""
 fi
 
 # Skip validation for merge commits and empty commits
 if [[ "$COMMIT_MSG" =~ ^Merge\ .* ]] || [[ -z "$COMMIT_MSG" ]]; then
-    log_info "Skipping pre-commit checks for merge or empty commit"
-    exit 0
+    log_warning "Skipping pre-commit message check for merge or empty commit"
 fi
 
 # Function to validate commit message format
@@ -64,7 +63,7 @@ validate_commit_message() {
     
     # Skip validation for empty first line or special commits
     if [[ -z "$first_line" ]] || [[ "$first_line" =~ ^WIP:.* ]] || [[ "$first_line" =~ ^squash!.* ]]; then
-        log_info "Skipping commit message validation"
+        log_warning "Skipping commit message validation"
         return 0
     fi
     
