@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: docker.io/${{ secrets.DOCKERHUB_USERNAME }}
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.event.repository.name }}
 
 permissions:
   contents: read
@@ -117,11 +117,13 @@ jobs:
           path: |
             dist/
             package.json
+            Dockerfile
           retention-days: 7
 
   docker-build:
     name: Build Docker Image
     runs-on: ubuntu-latest
+    environment: cas-dev
     needs: [build]
     outputs:
       image-tag: ${{ steps.meta.outputs.tags }}
