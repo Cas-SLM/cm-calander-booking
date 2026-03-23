@@ -14,7 +14,7 @@ inputs:
   frozen-lockfile:
     description: 'Use frozen lockfile for install'
     required: false
-    default: 'true'
+    default: 'false'
 
 runs:
   using: 'composite'
