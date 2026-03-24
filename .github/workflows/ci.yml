@@ -158,7 +158,7 @@ jobs:
         with:
           name: docker-image
           path: /tmp/app-image.tar
-          retention-days: 7
+          retention-days: 1
 
   security-scan:
     name: Security Scan
@@ -195,43 +195,22 @@ jobs:
           sarif_file: trivy-results.sarif
 
   # =============================================================================
-  # Stage 3: Push Scanned Image (Supply Chain Integrity)
+  # Stage 3: Trigger Release Pipeline
   # =============================================================================
 
-  docker-push:
-    name: Push Scanned Docker Image
+  trigger-release:
+    name: Trigger Release Pipeline
     runs-on: ubuntu-latest
-    needs: [security-scan, docker-build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
-    environment: 
-      name: registry
-      url: https://hub.docker.com/r/${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+    needs: [security-scan]
+    if: github.ref == 'refs/heads/release' && needs.security-scan.result == 'success'
     steps:
-      - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+      - name: Trigger release workflow
+        uses: actions/github-script@v7
         with:
-          name: docker-image
-          path: /tmp
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Load and tag image
-        id: load
-        run: |
-          docker load --input /tmp/docker-image/app-image.tar
-          IMAGE_ID=$(docker images --quiet | head -n1)
-          
-          # Tag with version and latest
-          docker tag $IMAGE_ID ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
-          docker tag $IMAGE_ID ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          
-          echo "image-id=$IMAGE_ID" >> $GITHUB_OUTPUT
-
-      - name: Push images
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.version }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'release.yml'
+            })
+            console.log('✅ Release pipeline triggered successfully')

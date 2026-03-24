@@ -125,6 +125,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: true
+          build-args: |
+            VERSION=${{ needs.release.outputs.new-version }}
 
   # =============================================================================
   # Stage 4: Merge Release to Main (Safe Merge)
