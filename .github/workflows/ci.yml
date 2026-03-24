@@ -170,13 +170,13 @@ jobs:
       - name: Load Docker image
         id: load
         run: |
-          docker load --input /tmp/docker-image/app-image.tar
+          docker load --input /tmp/app-image.tar
           IMAGE_ID=$(docker images --quiet | head -n1)
           echo "image-id=$IMAGE_ID" >> $GITHUB_OUTPUT
           echo "image=$(docker images --format '{{.Repository}}:{{.Tag}}' | head -n1)" >> $GITHUB_OUTPUT
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.29.1
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: ${{ steps.load.outputs.image }}
           format: sarif
