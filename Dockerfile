@@ -11,7 +11,7 @@ COPY src/ ./src/
 
 RUN npm run build
 
-RUN npm prune --omit-dev
+RUN npm prune --omit=dev
 
 
 FROM gcr.io/distroless/nodejs22-debian13 AS production
