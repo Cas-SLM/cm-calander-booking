@@ -2,50 +2,25 @@
 # Deploy script for Kubernetes deployments
 # Usage: ./scripts/deploy.sh <environment> <version>
 
-set -euo pipefail
+# Source shared utilities
+source "$(dirname "${BASH_SOURCE[0]}")/utils.sh"
 
+# Script parameters
 ENVIRONMENT="${1:-dev}"
 VERSION="${2:-latest}"
+IMAGE_NAME="${IMAGE_NAME:-cm-hello-ts}"
 IMAGE_TAG="${IMAGE_NAME}:${VERSION}"
 REGISTRY="docker.io"
 NAMESPACE="${3:-cas-central}"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-echo_usage() {
-    echo "Usage: $0 <environment> <version>"
-    echo "Environments: dev, test, prod"
-}
-
-if [[ ! "$ENVIRONMENT" =~ ^(dev|test|prod)$ ]]; then
-    log_error "Environment is required"
-    log_error "Invalid environment: $ENVIRONMENT"
-    echo_usage
+# Validate parameters
+if ! validate_environment "$ENVIRONMENT"; then
+    show_deploy_usage
     exit 1
 fi
 
-if [[ -z "$VERSION" ]]; then
-    log_error "Version is required"
-    echo_usage
+if ! validate_required_param "Version" "$VERSION"; then
+    show_deploy_usage
     exit 1
 fi
 
@@ -57,25 +32,17 @@ Namespace: ${NAMESPACE}
 Image: ${IMAGE_TAG}
 =========================================="
 
-# Validate environment
-
-# Check if kubectl is available
-if ! command -v kubectl &> /dev/null; then
-    log_error "kubectl is not installed or not in PATH"
+# Validate environment and tools
+if ! check_kubectl; then
     exit 1
 fi
 
-# Check if we have a valid kubectl context
-if ! kubectl cluster-info &> /dev/null; then
-    log_error "No valid kubectl context found"
+if ! check_kubectl_context; then
     exit 1
 fi
 
-# Check if namespace exists, create if not
-if ! kubectl get namespace "$NAMESPACE" &>/dev/null; then
-    log_info "Creating namespace: $NAMESPACE"
-    kubectl create namespace "$NAMESPACE"
-fi
+# Ensure namespace exists
+ensure_namespace "$NAMESPACE"
 
 # Apply Kubernetes manifests with environment-specific values
 echo "Applying Kubernetes manifests..."
