@@ -115,10 +115,12 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            dist/
             package.json
             Dockerfile
-          retention-days: 7
+            pnpm-lock.yaml
+            tsconfig.json
+            src/
+          retention-days: 1
 
   docker-build:
     name: Build Docker Image
