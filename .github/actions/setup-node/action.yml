@@ -20,7 +20,7 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Node.js
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
 
@@ -28,16 +28,12 @@ runs:
       shell: bash
       run: corepack enable
 
-    - name: Install pnpm
-      shell: bash
-      run: corepack prepare pnpm@latest
-
     - name: Install dependencies
       if: inputs.install-deps == 'true'
       shell: bash
       run: |
         if [ "${{ inputs.frozen-lockfile }}" = "true" ]; then
-          corepack pnpm install --frozen-lockfile
+          pnpm install --frozen-lockfile
         else
-          corepack pnpm install
+          pnpm install
         fi
