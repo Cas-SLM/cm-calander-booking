@@ -2,6 +2,8 @@ FROM node:25-alpine AS builder
 
 WORKDIR /build
 
+RUN npm install -g corepack
+
 RUN corepack enable \
  && corepack prepare pnpm@9.12.0 --activate
 
