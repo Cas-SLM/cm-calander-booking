@@ -31,16 +31,20 @@
     "ajv": "^8.18.0"
   },
   "dependencies": {
+    "@googleapis/calendar": "^14.2.0",
+    "@googleapis/oauth2": "^5.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "google-auth-library": "^10.6.2",
+    "googleapis": "^171.4.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
-    "@nestjs/cli": "^11.0.0",
+    "@nestjs/cli": "^11.0.16",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@types/express": "^5.0.0",

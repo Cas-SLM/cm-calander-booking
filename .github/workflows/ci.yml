@@ -114,7 +114,6 @@ jobs:
   docker-build:
     name: Build & Push Docker Image
     runs-on: ubuntu-latest
-    environment: cas-dev
     needs: [build]
 
     steps:

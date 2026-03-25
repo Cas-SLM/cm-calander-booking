@@ -161,6 +161,9 @@ check_for_changes() {
 
 # Main execution
 main() {
+    log_info "Installing packages"
+    pnpm i
+    
     log_info "Starting pre-commit checks..."
     echo ""
     
